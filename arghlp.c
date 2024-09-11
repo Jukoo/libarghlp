@@ -1,12 +1,10 @@
 #include <stdlib.h> 
 #include <unistd.h> 
-#include <getopt.h> 
 #include <libgen.h>
 #include <stdio.h> 
 #include <string.h>
-#include <wchar.h> 
 
-#include  "getoptl_ext.h"
+#include  "arghlp.h"
 
 char __usage[USAGE_BUFF] = { 0 } ; 
 char __shopt[MAX_BUFF] ={0}; 
@@ -19,12 +17,16 @@ struct __flags_t{
 };
 
 
-char * get_program_basename(char *const  * argvector)  
+static char * get_program_basename(char *const  * argvector)  
 {
      return  __xpg_basename( *argvector)   ;  
 }
 
-char * build_short_option(const  struct optionx * optxlist) 
+static void *  set_option(char * restrict shortopt ,  int  has_arg)
+{
+  return  memset(shortopt , ARGENTRY_SYMB,  has_arg) ; 
+}
+static char * build_short_option(const  struct optionx * optxlist) 
 {
   struct option * opt = nullable;
   struct optionx * optx = (struct  optionx *)  optxlist ;
@@ -55,10 +57,10 @@ char * build_short_option(const  struct optionx * optxlist)
     {
        case required_argument:  
          soptindex++; 
-         memset((shortopts+soptindex),ARGIN , ARGREQUIERED);
+         set_option((shortopts+soptindex) , REQUIRED) ; 
          break;
        case optional_argument: 
-         memset((shortopts+ ++soptindex),ARGIN ,ARGOPTIONAL);
+         set_option((shortopts+ ++soptindex) ,OPTIONAL) ; 
          soptindex++; 
          break; 
        case no_argument:
@@ -80,7 +82,7 @@ void static build_usage_helper(char * flags, const char * flag_description)
 {
   char s[MAX_BUFF]=  {0}; 
   flags_t  *f = (flags_t*) flags ; 
-  sprintf(s , USAGE_FRMT,  f->short_flags ,  f->long_flags , flag_description) ; 
+  sprintf(s , HELPER_FRMT,  f->short_flags ,  f->long_flags , flag_description) ; 
  
   if (!strrchr(s,0xa)) 
      strcat(s,"\n") ; 
@@ -105,7 +107,7 @@ static char * make_synopsys(char * bn , struct synopsys_t * synopsys , char * us
   char *header = synopsys->header_description ; 
   char *footer = synopsys->footer_description ;  
 
-  sprintf(usage_body , "USAGE: %s \n" , bn) ;   
+  sprintf(usage_body , USAGE_FRMT , bn) ;   
   
   if (header!= nullable) {
     //!just replace the  '\n' if header  if not null for
@@ -124,18 +126,17 @@ static char * make_synopsys(char * bn , struct synopsys_t * synopsys , char * us
   return usage_body ; 
 }
 
-char *argopt_bundler ( int ac    , char * const * av  ,  const struct  argopt *  argopt ) 
+void *argopt_bundler ( int ac    , char * const * av  ,  const struct  argopt *  argopt , void * ax ) 
 {
   char * bn  = get_program_basename(av) ;
   char *sopt = build_short_option(argopt->options);
   char * helper = make_synopsys( bn , argopt->synopsys , __usage) ;  
- 
   struct option  getopt_option[__nargp];  
   
   if (!extract_getopt_option(getopt_option)) 
     return nullable ; 
   
-  argopt->ucustom(ac , av , sopt,  getopt_option);  
+  return argopt->arghdl_cb(ac , av , sopt,  getopt_option , ax);  
 
 }
 

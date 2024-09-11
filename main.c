@@ -1,8 +1,8 @@
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <getopt.h> 
+//#include <getopt.h> 
 
-#include "getoptl_ext.h" 
+#include "arghlp.h"
 
 struct optionx optlx[] ={ 
   {{"help", no_argument , nullable, 'h'} , "\t\tprint help of the program"}, 
@@ -27,16 +27,17 @@ struct synopsys_t  s =  {
 }; 
 
 
-char * argparse(int ac  ,char * const * av , const char *shortopt ,  struct option * opts) 
+void  * argparse(int ac  ,char * const * av , const char *shortopt ,  struct option * opts ,  void * args) 
 {
   int p  = 0  ; 
-  
+ 
+  if (1 == ac ) __help__ ; 
   while( (p  = getopt_long(ac , av,  shortopt ,  opts ,  0)) != ~0 ) 
   {
     switch(p) 
     {
       case  'h': 
-        __help() ;
+        __help__;
         break; 
       case 'v':  
         dprintf(1,  "hi\n") ; 
@@ -52,10 +53,10 @@ int main (int ac , char **av)
   struct argopt argp = {
     .synopsys = &s, 
     .options   = optlx, 
-    .ucustom=  argparse
+    .arghdl_cb =  argparse
   } ; 
     
-  argopt_bundler(ac , av ,&argp) ; 
+  argopt_bundler(ac , av ,&argp , nullable) ; 
   
 
   return EXIT_SUCCESS ; 
