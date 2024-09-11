@@ -1,11 +1,28 @@
-/** @file  getoptl_ext.h  
- *  @brief extending getopt option  struct with embedded  
- *         description for each  flags 
- *  @author  Jukoo aka Umar Ba <jUmarB@protonmail.com> 
-
+/** @file  arghlp.h  
+ *  @brief extend getopt for a more readable use of 
+ *         arguments with an intergrated description
+ *         field for improved code readability,
+ *         Define your helper at the same time as you
+ *         define your flags 
+ *
+ *  @Copyright (C) 2024 Umar Ba jUmarB@protonmail.com  @OpenWire Studio .HomeLab
+ *         This program is free software: you can redistribute it and/or modify
+ *         it under the terms of the GNU General Public License as published by
+ *         the Free Software Foundation, either version 3 of the License, or
+ *         (at your option) any later version.
+ *         
+ *         This program is distributed in the hope that it will be useful,
+ *         but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *         GNU General Public License for more details.
  */
-#ifndef __argument_helper 
+
+#if!defined  (__argument_helper)  
 #define __argument_helper  
+
+#if __GNUC_PREREQ(3,4) 
+# pragma once 
+#endif 
 
 #include <getopt.h>
 
@@ -17,8 +34,11 @@
 
 #define  nullable NULL 
 
-#define  MAX_BUFF   0xff
-#define  USAGE_BUFF 0x1000 //! That's arbitrary 
+#define  MAX_BUFF   255
+
+#ifndef  USAGE_BUFF
+#define  USAGE_BUFF 5000 //! That's arbitrary 
+#endif 
 
 #define  OPT_END  { nullable,0,nullable,0} 
 #define  OPTX_END {OPT_END,0} 
@@ -26,11 +46,10 @@
 #define  OPT_END_DEF   (struct option) OPT_END 
 #define  OPTX_END_DEF  (struct optionx) OPTX_END 
 
-#define  def(__option) \
-  __option##_DEF
+#define  def(__option) __option##_DEF
 
 #ifndef BUILD_FROM_SNAME
-//! By default  it  use option.val to build  short argument 
+//! By default  it  use option.val to build  short arguments 
 # define BUILD_FROM_SVAL
 #endif 
 
@@ -45,7 +64,7 @@
 # define USAGE_FRMT  "USAGE: %s \n"
 #endif 
 
-//! __help() macro 
+//! __help__  
 #define __help__ fprintf(stdout ,"%s\n", __usage)
 #define __usage__  __help__
 #define __display_usage__ __help__
@@ -69,15 +88,14 @@ enum {
 #define ARGOPTIONAL   (1 << ARGOPTIONAL) 
 }; 
 
-#define __attribute_option(__attr__) \
-  ARG#__attr__ 
+#define __attribute_option(__attr__) ARG#__attr__ 
 
 
-typedef struct __flags_t flags_t ;  
-extern char    __usage[USAGE_BUFF] ;
+typedef struct __flags_t flags_t   ; //! Opaque type of flags
+extern char    __usage[USAGE_BUFF] ; //! 
 extern char    __shopt[MAX_BUFF] ; 
 extern struct  option  __optl[MAX_BUFF] ; 
-extern int     __nargp ;  //! store how many argumen used  
+extern int     __nargp ;            //! arguments counter  
                     
 
 struct  optionx { 
@@ -90,34 +108,27 @@ struct synopsys_t {
   char * footer_description ;  
 }; 
 
-typedef struct argopt  argopt ;  
+typedef struct arghlp  arghlp;  
 
-typedef  void *(*__user_arghandler)(int __ac , char *const * __av , 
-    const char  * __shortopt , 
-    struct option * __longoption  , 
-    void * __args) ;   
+typedef  void *(*arghlp_handler)(int __ac , char *const * __av , 
+    const char    *  __shortopt , 
+    struct option *  __longoption  , 
+    void * __wur __args) ;   
 
 
-struct argopt { 
+struct arghlp { 
   struct synopsys_t  *synopsys ; 
   struct optionx * options; 
-  __user_arghandler  arghdl_cb ; 
+  arghlp_handler  ah_handler;   
 };  
  
 
-ARGHLP static char * get_program_basename(char *const  * __argument_vector) __nonnull((1)); 
-ARGHLP static void*  set_option( char  * __shortopt ,   int __has_arg ) ; 
+ARGHLP static char  * get_program_basename(char *const  * __argument_vector) __wur __nonnull((1)); 
+ARGHLP static void  * set_option( char  * __shortopt ,   int __has_arg ) ; 
 ARGHLP static  char * build_short_option(const struct optionx * __raw_optionx) __wur __nonnull((1)); 
 
 ARGHLP void static build_usage_helper(char* flags_t ,
     const char * __flag_description) __nonnull((1 ,2)); 
-
-ARGHLP char * print_help(void) ; 
-
-ARGHLP void  *argopt_bundler ( int __argcounter  ,
-    char * const *__argvector , 
-    const  struct argopt *__argopt , void *__argxtra) 
-  __nonnull((2,3));
 
 ARGHLP static char * make_sysnopsys(char *__basename , 
     struct synopsys_t * __synopsys,
@@ -125,4 +136,9 @@ ARGHLP static char * make_sysnopsys(char *__basename ,
 
 ARGHLP static struct option * extract_getopt_option(struct  option *  __g_option) __nonnull(()) ;
 
-#endif 
+ARGHLP void  *arghlp_context ( int __argcounter  ,
+    char * const *__argvector , 
+    const  struct arghlp *__arghlp , void * __wur __argxtra) 
+  __nonnull((2,3));
+
+#endif //!__argument_helper  

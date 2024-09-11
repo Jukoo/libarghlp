@@ -1,3 +1,16 @@
+ /*  @file arghlp.c 
+  * @Copyright (C) 2024 Umar Ba jUmarB@protonmail.com  @OpenWire Studio .HomeLab
+  *         This program is free software: you can redistribute it and/or modify
+  *         it under the terms of the GNU General Public License as published by
+  *         the Free Software Foundation, either version 3 of the License, or
+  *         (at your option) any later version.
+  *        
+  *         This program is distributed in the hope that it will be useful,
+  *         but WITHOUT ANY WARRANTY; without even the implied warranty of
+  *         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  *         GNU General Public License for more details.
+  */
+
 #include <stdlib.h> 
 #include <unistd.h> 
 #include <libgen.h>
@@ -6,11 +19,11 @@
 
 #include  "arghlp.h"
 
-char __usage[USAGE_BUFF] = { 0 } ; 
+char __usage[USAGE_BUFF] = {0} ; 
 char __shopt[MAX_BUFF] ={0}; 
-struct option  __optl[MAX_BUFF]; 
 int __nargp = 0 ; 
 
+struct option  __optl[MAX_BUFF]; 
 struct __flags_t{ 
   char *long_flags ; 
   char short_flags ; 
@@ -30,7 +43,6 @@ static char * build_short_option(const  struct optionx * optxlist)
 {
   struct option * opt = nullable;
   struct optionx * optx = (struct  optionx *)  optxlist ;
-  
   
   char * shortopts = calloc(MAX_BUFF ,sizeof(char*)) ;
   if (!shortopts) 
@@ -82,6 +94,7 @@ void static build_usage_helper(char * flags, const char * flag_description)
 {
   char s[MAX_BUFF]=  {0}; 
   flags_t  *f = (flags_t*) flags ; 
+  
   sprintf(s , HELPER_FRMT,  f->short_flags ,  f->long_flags , flag_description) ; 
  
   if (!strrchr(s,0xa)) 
@@ -126,20 +139,20 @@ static char * make_synopsys(char * bn , struct synopsys_t * synopsys , char * us
   return usage_body ; 
 }
 
-void *argopt_bundler ( int ac    , char * const * av  ,  const struct  argopt *  argopt , void * ax ) 
+void *arghlp_context ( int ac    , char * const * av  ,  const struct  arghlp *  arghlp , void * ax ) 
 {
   char * bn  = get_program_basename(av) ;
-  char *sopt = build_short_option(argopt->options);
-  char * helper = make_synopsys( bn , argopt->synopsys , __usage) ;  
+  char * sopt = build_short_option(arghlp->options);
+  (void *) make_synopsys( bn , arghlp->synopsys , __usage) ;
+
   struct option  getopt_option[__nargp];  
   
   if (!extract_getopt_option(getopt_option)) 
     return nullable ; 
   
-  return argopt->arghdl_cb(ac , av , sopt,  getopt_option , ax);  
+  return arghlp->ah_handler(ac , av , sopt,  getopt_option , ax);  
 
 }
-
 
 static struct option * extract_getopt_option(struct  option * g_opt) 
 {
