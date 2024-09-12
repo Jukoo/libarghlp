@@ -13,10 +13,6 @@ GNU coreutils online help: <https://www.gnu.org/software/coreutils/>\n\
 Full documentation <https://www.gnu.org/software/coreutils/cat>\n\
 or available locally via: info '(coreutils) cat invocation'"
 
-struct synopsys_t  s =  {
-   .header_description = HEADER , 
-   .footer_description = FOOTER
-}; 
 
 struct optionx optlx[] ={ 
   {{"help", no_argument , nullable, 'h'}      , "\t\tprint help of the program"}, 
@@ -67,7 +63,7 @@ void  * argparse(int ac  ,char * const * av , const char *shortopt ,  struct opt
 int main (int ac , char **av)
 {
   struct arghlp arghlp = {
-    .synopsys   = &s, 
+    .synopsys   =  {HEADER , FOOTER} ,  
     .options    = optlx, 
     .ah_handler = argparse
   } ; 

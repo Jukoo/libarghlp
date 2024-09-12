@@ -104,9 +104,9 @@ void static build_usage_helper(char * flags, const char * flag_description)
 
 }
 
-static char * make_synopsys(char * bn , struct synopsys_t * synopsys , char * usage_body) 
+static char * make_synopsys(char * bn , struct arghlp * ah_synopsys, char * usage_body) 
 {
-  if(!synopsys) 
+  if(!ah_synopsys) 
     return usage_body ; 
   
 
@@ -115,10 +115,12 @@ static char * make_synopsys(char * bn , struct synopsys_t * synopsys , char * us
   memcpy(usage_tmp , usage_body ,  strlen(usage_body)) ;   
 
   //!clean usage body 
+    
   explicit_bzero(usage_body ,USAGE_BUFF) ; 
+  struct  synopsys_t *s=  &ah_synopsys->synopsys ;  
   
-  char *header = synopsys->header_description ; 
-  char *footer = synopsys->footer_description ;  
+  char *header = s->header_description ; 
+  char *footer = s->footer_description ;  
 
   sprintf(usage_body , USAGE_FRMT , bn) ;   
   
@@ -142,8 +144,9 @@ static char * make_synopsys(char * bn , struct synopsys_t * synopsys , char * us
 void *arghlp_context ( int ac    , char * const * av  ,  const struct  arghlp *  arghlp , void * ax ) 
 {
   char * bn  = get_program_basename(av) ;
-  char * sopt = build_short_option(arghlp->options);
-  (void *) make_synopsys( bn , arghlp->synopsys , __usage) ;
+  char * sopt = build_short_option(arghlp->options); 
+  struct arghlp   *synopsys =  ( struct  arghlp * ) arghlp ; 
+  (void *) make_synopsys( bn , synopsys, __usage) ;
 
   struct option  getopt_option[__nargp];  
   
