@@ -1,3 +1,0 @@
-/home/umar/Desktop/playground/libargp/example/build/CMakeFiles/elfcheck.dir
-/home/umar/Desktop/playground/libargp/example/build/CMakeFiles/edit_cache.dir
-/home/umar/Desktop/playground/libargp/example/build/CMakeFiles/rebuild_cache.dir

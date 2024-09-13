@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/elfcheck.dir/main.c.o CMakeFiles/elfcheck.dir/elfcheck.c.o -o /home/umar/Desktop/playground/libargp/example/bin/elfcheck   -L/home/umar/Desktop/playground/libargp/example/../lib  -Wl,-rpath,/home/umar/Desktop/playground/libargp/example/../lib -larghlp
