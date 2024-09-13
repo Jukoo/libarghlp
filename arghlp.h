@@ -117,7 +117,7 @@ typedef  void *(*arghlp_handler)(int __ac , char *const * __av ,
 
 
 struct arghlp { 
-  struct synopsys_t  *synopsys ; 
+  struct synopsys_t synopsys ; 
   struct optionx * options; 
   arghlp_handler  ah_handler;   
 };  
@@ -131,7 +131,7 @@ ARGHLP void static build_usage_helper(char* flags_t ,
     const char * __flag_description) __nonnull((1 ,2)); 
 
 ARGHLP static char * make_sysnopsys(char *__basename , 
-    struct synopsys_t * __synopsys,
+    struct arghlp * __synopsys,
     char * __usage_body) __nonnull((1,2,3)) ; 
 
 ARGHLP static struct option * extract_getopt_option(struct  option *  __g_option) __nonnull(()) ;
