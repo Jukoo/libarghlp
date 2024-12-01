@@ -16,7 +16,7 @@
 #include <libgen.h>
 #include <stdio.h> 
 #include <string.h>
-
+#include <ctype.h> 
 #include  "arghlp.h"
 
 char __usage[USAGE_BUFF] = {0} ; 
@@ -169,3 +169,52 @@ static struct option * extract_getopt_option(struct  option * g_opt)
   return g_opt ;  
 }
 
+char *optentry(char *const *av  , int ac  ,int optindex)   
+{
+  
+  if(ac == optindex) 
+    return   optarg  ; 
+  
+  char *optfname= (char *) *(av + (optindex -1)) ; 
+ 
+  if(0x2d == (*optfname & 0xff) && 0x2d !=  (*(optfname +1) & 0xff ))
+    return optarg ; 
+
+  //! looking for  equal symbol  "=" 
+  
+  char *equ_symb= strchr(optfname ,  0x3d & 0xff ) ;  
+  if (equ_symb)  
+  {
+    size_t symb_offset= equ_symb -  optfname  ;   
+    char *next= equ_symb+1; 
+    if (*next == '\0')   
+    {
+      goto __maybe_next; 
+    }
+
+    //! --option=argument
+    return  strdup(next) ; 
+  }
+  goto __maybe_next; 
+
+__maybe_next: 
+  char *optfname_value = (char *) *(av+optindex);
+  
+  if(0x2d == (*optfname_value & 0xff)) return optarg ; 
+
+  //!  --option =args 
+  if(0x3d == (*optfname_value & 0xff)) 
+  {
+    optfname_value++ ; 
+    if (0 == (*optfname_value & 0xff))  
+    {
+      optindex++ ; 
+      goto __maybe_next ; 
+    }
+    return strdup(optfname_value)  ; 
+  }
+
+  //! --option= args
+  return  strdup(optfname_value) ; 
+
+}

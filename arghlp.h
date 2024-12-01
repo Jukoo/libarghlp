@@ -126,19 +126,12 @@ struct arghlp {
 ARGHLP static char  * get_program_basename(char *const  * __argument_vector) __wur __nonnull((1)); 
 ARGHLP static void  * set_option( char  * __shortopt ,   int __has_arg ) ; 
 ARGHLP static  char * build_short_option(const struct optionx * __raw_optionx) __wur __nonnull((1)); 
-
-ARGHLP void static build_usage_helper(char* flags_t ,
-    const char * __flag_description) __nonnull((1 ,2)); 
-
-ARGHLP static char * make_sysnopsys(char *__basename , 
-    struct arghlp * __synopsys,
-    char * __usage_body) __nonnull((1,2,3)) ; 
-
+ARGHLP void static build_usage_helper(char* flags_t, const char * __flag_description) __nonnull((1,2)); 
+ARGHLP static char * make_sysnopsys(char *__basename, struct arghlp * __synopsys, char * __usage_body) __nonnull((1,2,3)) ; 
 ARGHLP static struct option * extract_getopt_option(struct  option *  __g_option) __nonnull(()) ;
+ARGHLP void  *arghlp_context ( int __argcounter, char * const *__argvector , 
+                               const  struct arghlp *__arghlp , void * __wur __argxtra) __nonnull((2,3));
 
-ARGHLP void  *arghlp_context ( int __argcounter  ,
-    char * const *__argvector , 
-    const  struct arghlp *__arghlp , void * __wur __argxtra) 
-  __nonnull((2,3));
+ARGHLP char *optentry(char * const * __av ,int __ac  , int __optindex) ;  
 
 #endif //!__argument_helper  

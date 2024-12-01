@@ -44,7 +44,8 @@ void  * argparse(int ac  ,char * const * av , const char *shortopt ,  struct opt
         fprintf(stdout, "input -> %s\n" , input) ; 
         break; 
       case 'o': 
-        char *output = optarg  ; 
+    
+        char *output = optentry( av , ac , optind) ; 
         fprintf(stdout, "output -> %s\n" , output) ; 
         break;
 
